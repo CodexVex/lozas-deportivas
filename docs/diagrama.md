@@ -1,0 +1,46 @@
+# Diagrama entidad relación
+
+```mermaid
+erDiagram
+  venues {
+    INTEGER id PK
+    VARCHAR name
+    VARCHAR address
+  }
+  courts {
+    INTEGER id PK
+    INTEGER venue_id FK
+    VARCHAR name
+    VARCHAR sport
+    INTEGER capacity
+    NUMERIC hourly_price
+  }
+  venues ||--o{ courts : "venue_id"
+  schedules {
+    INTEGER id PK
+    INTEGER court_id FK
+    INTEGER weekday
+    TIME start_time
+    TIME end_time
+  }
+  courts ||--o{ schedules : "court_id"
+  rentals {
+    INTEGER id PK
+    INTEGER court_id FK
+    INTEGER user_id FK
+    VARCHAR event
+    VARCHAR sport
+    TIMESTAMP starts_at
+    TIMESTAMP ends_at
+    VARCHAR status
+    VARCHAR payment_status
+    NUMERIC total
+  }
+  courts ||--o{ rentals : "court_id"
+  users ||--o{ rentals : "user_id"
+  users {
+    INTEGER id PK
+    VARCHAR name
+    VARCHAR email
+  }
+```

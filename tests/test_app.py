@@ -38,3 +38,15 @@ def test_validation(client):
     assert client.post('/rentals',json=payload(user_id=999)).status_code==404
     assert client.post('/courts',json={'venue_id':1,'name':'','sport':'Fútbol','capacity':0,'hourly_price':30}).status_code==400
     assert client.post('/courts/1/schedules',json={'weekday':0,'start_time':'09:00','end_time':'12:00'}).status_code==409
+
+@pytest.mark.skipif(not os.environ.get('TEST_DATABASE_URL'),reason='Requiere bloqueos PostgreSQL')
+def test_concurrent_reservations(client):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    app=client.application; barrier=Barrier(2)
+    def submit(_):
+        with app.test_client() as c:
+            barrier.wait(timeout=10)
+            return c.post('/rentals',json=payload()).status_code
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        assert sorted(pool.map(submit,range(2)))==[201,409]

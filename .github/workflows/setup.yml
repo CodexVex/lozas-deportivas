@@ -25,11 +25,11 @@ jobs:
           args=' '.join(shlex.quote(x) for x in ['setup',os.environ['REPO'],os.environ['REV']])
           buffer=io.BytesIO()
           with tarfile.open(fileobj=buffer,mode='w:gz') as tar:
-              for path in ['app.py','requirements.txt','Dockerfile','compose.yml','bd.sql','feed.sql','templates']:
+              for path in ['app.py','requirements.txt','Dockerfile','compose.yml','bd.sql','feed.sql','templates','tests','scripts']:
                   tar.add(path)
           payload=base64.b64encode(buffer.getvalue()).decode()
           unpack="mkdir -p /opt/lozas\nprintf '%s' '"+payload+"' | base64 -d | tar xz -C /opt/lozas\n"
-          Path('/tmp/remote.sh').write_text('set -eu\n'+unpack+'set -- '+args+'\n'+Path('scripts/remote.sh').read_text())
+          Path('/tmp/remote.sh').write_text('set -eu\n'+unpack+'bash -s -- '+args+" <<'LOZAS_REMOTE'\n"+Path('scripts/remote.sh').read_text()+'\nLOZAS_REMOTE\n')
           SCRIPT
           az vm run-command invoke -g rg-lozas-demo -n vm-lozas --command-id RunShellScript --scripts @/tmp/remote.sh -o json > /tmp/result.json
           python - <<'SCRIPT'
