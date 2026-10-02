@@ -1,0 +1,29 @@
+# Revisión breve
+
+## Pruebas
+
+- Unitarias: duración y límites, fecha pasada, medianoche, zona horaria y evento obligatorio.
+- Integración: reserva, importe, conflictos, confirmación, pago, historial y validación con PostgreSQL.
+- Concurrencia: dos solicitudes al mismo horario; solo una debe aceptarse.
+- SQL: creación y carga de al menos 10 registros por tabla.
+
+La ejecución verificada y sus resultados están en GitHub Actions. Las pruebas no cubren cada formulario ni fallos de red o recuperación tras una caída.
+
+## Límites del código y la arquitectura
+
+- Sin autenticación ni permisos: cualquier visitante puede reservar, consultar historiales y registrar pagos. Usa solo datos ficticios.
+- El pago es manual; no hay pasarela ni verificación bancaria.
+- Las reservas pendientes no expiran y no existe un flujo de cancelación en la pantalla.
+- Una sola VM: si falla, se detienen web y base de datos. No hay copias de seguridad automáticas.
+- La demo publica por HTTP; no incluye HTTPS.
+- SQL y modelos ORM se mantienen manualmente, sin migraciones de esquema.
+- La capacidad se muestra, pero no se valida contra asistentes de un evento.
+- Si una reserva cruza dos franjas contiguas configuradas por separado, la validación actual la rechaza. Los horarios de ejemplo usan una única franja diaria.
+
+## Respecto al enunciado
+
+- Se usa Flask y HTML sencillo. El enunciado permite otro framework; no se implementó .NET ni React/Angular/Vue.
+- Los horarios son semanales, pero la búsqueda consulta una fecha concreta; no hay calendario semanal visual.
+- Administración mínima: registro de lozas y horarios, sin edición ni eliminación desde la pantalla.
+- Liquibase era una sugerencia: `setup.yml` utiliza `psql` y los dos archivos SQL.
+- Treinta minutos permiten una demostración básica. Autenticación, pagos reales, seguridad y recuperación requieren más trabajo. El aprovisionamiento también depende de Azure.
