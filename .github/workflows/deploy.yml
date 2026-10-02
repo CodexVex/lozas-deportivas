@@ -29,7 +29,7 @@ jobs:
                   tar.add(path)
           payload=base64.b64encode(buffer.getvalue()).decode()
           unpack="mkdir -p /opt/lozas\nprintf '%s' '"+payload+"' | base64 -d | tar xz -C /opt/lozas\n"
-          Path('/tmp/remote.sh').write_text('set -eu\n'+unpack+'bash -s -- '+args+" <<'LOZAS_REMOTE'\n"+Path('scripts/remote.sh').read_text()+'\nLOZAS_REMOTE\n')
+          Path('/tmp/remote.sh').write_text('set -eu\n'+unpack+"cat > /tmp/lozas-action.sh <<'LOZAS_REMOTE'\n"+Path('scripts/remote.sh').read_text()+'\nLOZAS_REMOTE\nbash /tmp/lozas-action.sh '+args+'\n')
           SCRIPT
           az vm run-command invoke -g rg-lozas-demo -n vm-lozas --command-id RunShellScript --scripts @/tmp/remote.sh -o json > /tmp/result.json
           python - <<'SCRIPT'
