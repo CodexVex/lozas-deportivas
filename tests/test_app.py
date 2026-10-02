@@ -11,8 +11,8 @@ def client(tmp_path):
     app=create_app(url); engine=app.config['ENGINE']
     Base.metadata.drop_all(engine); Base.metadata.create_all(engine)
     with Session(engine) as s,s.begin():
-        s.add_all([Venue(id=1,name='Sede',address='Av. 1'),User(id=1,name='Ana',email='ana@example.com')]);s.flush()
-        s.add(Court(id=1,venue_id=1,name='Loza',sport='Fútbol',capacity=20,hourly_price=30));s.flush()
+        s.add_all([Venue(name='Sede',address='Av. 1'),User(name='Ana',email='ana@example.com')]);s.flush()
+        s.add(Court(venue_id=1,name='Loza',sport='Fútbol',capacity=20,hourly_price=30));s.flush()
         from datetime import time
         for d in range(7): s.add(Schedule(court_id=1,weekday=d,start_time=time(8),end_time=time(22)))
     yield app.test_client()
