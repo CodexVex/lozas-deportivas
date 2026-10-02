@@ -1,0 +1,39 @@
+name: infra
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lozas-azure
+  cancel-in-progress: false
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    env:
+      STATE_ACCOUNT: ${{ vars.TF_STATE_ACCOUNT }}
+      LOCATION: ${{ vars.AZURE_LOCATION || 'eastus' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: hashicorp/setup-terraform@v3
+      - name: Preparar estado persistente
+        run: |
+          test -n "$STATE_ACCOUNT"
+          az group create -n rg-lozas-state -l "$LOCATION" --output none
+          az storage account create -n "$STATE_ACCOUNT" -g rg-lozas-state -l "$LOCATION" --sku Standard_LRS --allow-blob-public-access false --output none
+          KEY=$(az storage account keys list -g rg-lozas-state -n "$STATE_ACCOUNT" --query '[0].value' -o tsv)
+          echo "::add-mask::$KEY"
+          echo "ARM_ACCESS_KEY=$KEY" >> "$GITHUB_ENV"
+          az storage container create --name tfstate --account-name "$STATE_ACCOUNT" --account-key "$KEY" --output none
+          echo "ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)" >> "$GITHUB_ENV"
+      - name: Aprovisionar Terraform
+        working-directory: infra
+        run: |
+          terraform init -backend-config="resource_group_name=rg-lozas-state" -backend-config="storage_account_name=$STATE_ACCOUNT" -backend-config="container_name=tfstate" -backend-config="key=lozas.tfstate"
+          terraform fmt
+          terraform validate
+          terraform apply -auto-approve -var="location=$LOCATION"
+          echo "### URL de la aplicación" >> "$GITHUB_STEP_SUMMARY"
+          terraform output -raw application_url >> "$GITHUB_STEP_SUMMARY"

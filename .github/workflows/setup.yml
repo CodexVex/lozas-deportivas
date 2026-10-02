@@ -1,0 +1,41 @@
+name: setup
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lozas-azure
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Ejecutar en la máquina de Azure
+        env:
+          REPO: ${{ github.repository }}
+          REV: ${{ github.sha }}
+        run: |
+          python - <<'SCRIPT'
+          import os,shlex,tarfile,io,base64
+          from pathlib import Path
+          args=' '.join(shlex.quote(x) for x in ['setup',os.environ['REPO'],os.environ['REV']])
+          buffer=io.BytesIO()
+          with tarfile.open(fileobj=buffer,mode='w:gz') as tar:
+              for path in ['app.py','requirements.txt','Dockerfile','compose.yml','bd.sql','feed.sql','templates']:
+                  tar.add(path)
+          payload=base64.b64encode(buffer.getvalue()).decode()
+          unpack="mkdir -p /opt/lozas\nprintf '%s' '"+payload+"' | base64 -d | tar xz -C /opt/lozas\n"
+          Path('/tmp/remote.sh').write_text('set -eu\n'+unpack+'set -- '+args+'\n'+Path('scripts/remote.sh').read_text())
+          SCRIPT
+          az vm run-command invoke -g rg-lozas-demo -n vm-lozas --command-id RunShellScript --scripts @/tmp/remote.sh -o json > /tmp/result.json
+          python - <<'SCRIPT'
+          import json
+          data=json.load(open('/tmp/result.json'))
+          values=data.get('value',[])
+          for v in values: print(v.get('message',''))
+          if not any('LOZAS_SUCCESS' in v.get('message','') for v in values): raise SystemExit(1)
+          SCRIPT

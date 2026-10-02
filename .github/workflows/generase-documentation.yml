@@ -1,0 +1,54 @@
+name: generase-documentation
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  documentation-and-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: lozas
+          POSTGRES_USER: lozas
+          POSTGRES_PASSWORD: testpassword
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U lozas -d lozas"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      DATABASE_URL: postgresql+psycopg://lozas:testpassword@localhost:5432/lozas
+      PGPASSWORD: testpassword
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Crear base de datos y cargar 10 registros por tabla
+        run: |
+          psql -h localhost -U lozas -d lozas -v ON_ERROR_STOP=1 -f bd.sql
+          psql -h localhost -U lozas -d lozas -v ON_ERROR_STOP=1 -f feed.sql
+          python - <<'SCRIPT'
+          import os
+          from sqlalchemy import create_engine,text
+          with create_engine(os.environ['DATABASE_URL']).connect() as c:
+              for t in ['venues','users','courts','schedules','rentals']:
+                  n=c.execute(text(f'SELECT count(*) FROM {t}')).scalar()
+                  assert n>=10,(t,n)
+                  print(t,n)
+          SCRIPT
+      - run: python scripts/documentation.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diccionario-y-diagrama
+          path: docs/
+      - name: Pruebas unitarias
+        run: python -m pytest -q
+      - name: Pruebas de integración PostgreSQL
+        env:
+          TEST_DATABASE_URL: postgresql+psycopg://lozas:testpassword@localhost:5432/lozas
+        run: python -m pytest -q
