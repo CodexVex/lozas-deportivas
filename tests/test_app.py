@@ -50,3 +50,20 @@ def test_concurrent_reservations(client):
             return c.post('/rentals',json=payload()).status_code
     with ThreadPoolExecutor(max_workers=2) as pool:
         assert sorted(pool.map(submit,range(2)))==[201,409]
+
+
+def test_create_venue_and_court(client):
+    r=client.post('/venues',json={'name':'  Complejo Norte  ','address':'  Av. Norte 123  '})
+    assert r.status_code==201
+    assert r.json['name']=='Complejo Norte'
+    assert r.json['address']=='Av. Norte 123'
+    venue_id=r.json['id']
+    assert any(v['id']==venue_id for v in client.get('/venues').json)
+    r=client.post('/courts',json={'venue_id':venue_id,'name':'Cancha 1','sport':'Fútbol','capacity':20,'hourly_price':30})
+    assert r.status_code==201
+    assert r.json['venue_id']==venue_id
+
+@pytest.mark.parametrize('data',[{}, {'name':' ','address':'Av. 1'}, {'name':'Sede','address':' '}, {'name':'x'*101,'address':'Av. 1'}, {'name':'Sede','address':'x'*201}])
+def test_invalid_venue(client,data):
+    assert client.post('/venues',json=data).status_code==400
+    assert len(client.get('/venues').json)==1

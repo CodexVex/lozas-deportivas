@@ -94,6 +94,14 @@ def create_app(url=None):
     def catalog():
         model=User if request.path=='/users' else Venue
         with Session(engine) as s: return jsonify([serialize(x) for x in s.scalars(select(model).order_by(model.id))])
+    @app.post('/venues')
+    def new_venue():
+        d=request.get_json() or {}
+        name=text_value(d,'name',100); address=text_value(d,'address',200)
+        with Session(engine) as s, s.begin():
+            v=Venue(name=name,address=address)
+            s.add(v); s.flush(); result=serialize(v)
+        return jsonify(result),201
     @app.get('/courts')
     def courts():
         q=select(Court).order_by(Court.id)

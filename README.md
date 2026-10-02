@@ -79,6 +79,7 @@ La aplicación publicada usa el nombre público de Azure y HTTPS con Caddy. El c
 
 - `POST /courts`, `GET /courts`, `GET /courts/{id}`.
 - `POST /courts/{id}/schedules`.
+- `POST /venues` — registrar una sede con nombre y dirección.
 - `GET /courts/availability?date=2026-12-10&time=10:00&duration=60`.
 - `POST /rentals`, `POST /rentals/{id}/confirm`.
 - `GET /users/{id}/rentals`, `GET /courts/{id}/rentals`.
