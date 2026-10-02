@@ -25,7 +25,7 @@ jobs:
           args=' '.join(shlex.quote(x) for x in ['setup',os.environ['REPO'],os.environ['REV']])
           buffer=io.BytesIO()
           with tarfile.open(fileobj=buffer,mode='w:gz') as tar:
-              for path in ['.dockerignore','app.py','requirements.txt','Dockerfile','compose.yml','bd.sql','feed.sql','templates','tests','scripts']:
+              for path in ['.dockerignore','app.py','requirements.txt','Dockerfile','Caddyfile','compose.https.yml','compose.yml','bd.sql','feed.sql','templates','tests','scripts']:
                   tar.add(path)
           payload=base64.b64encode(buffer.getvalue()).decode()
           unpack="mkdir -p /opt/lozas\nprintf '%s' '"+payload+"' | base64 -d | tar xz -C /opt/lozas\n"

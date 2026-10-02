@@ -1,0 +1,7 @@
+{$APP_DOMAIN} {
+    reverse_proxy web:8000
+}
+
+http://172.174.92.49 {
+    redir https://{$APP_DOMAIN}{uri} permanent
+}

@@ -19,13 +19,15 @@ jobs:
           REPO: ${{ github.repository }}
           REV: ${{ github.sha }}
         run: |
+          export DOMAIN=$(az network public-ip show -g rg-lozas-demo -n lozas-ip --query dnsSettings.fqdn -o tsv)
+          test -n "$DOMAIN"
           python - <<'SCRIPT'
           import os,shlex,tarfile,io,base64
           from pathlib import Path
-          args=' '.join(shlex.quote(x) for x in ['deploy',os.environ['REPO'],os.environ['REV']])
+          args=' '.join(shlex.quote(x) for x in ['deploy',os.environ['REPO'],os.environ['REV'],os.environ['DOMAIN']])
           buffer=io.BytesIO()
           with tarfile.open(fileobj=buffer,mode='w:gz') as tar:
-              for path in ['.dockerignore','app.py','requirements.txt','Dockerfile','compose.yml','bd.sql','feed.sql','templates','tests','scripts']:
+              for path in ['.dockerignore','app.py','requirements.txt','Dockerfile','Caddyfile','compose.https.yml','compose.yml','bd.sql','feed.sql','templates','tests','scripts']:
                   tar.add(path)
           payload=base64.b64encode(buffer.getvalue()).decode()
           unpack="mkdir -p /opt/lozas\nprintf '%s' '"+payload+"' | base64 -d | tar xz -C /opt/lozas\n"
@@ -41,6 +43,6 @@ jobs:
           SCRIPT
       - name: Verificar URL pública
         run: |
-          IP=$(az network public-ip show -g rg-lozas-demo -n lozas-ip --query ipAddress -o tsv)
-          curl --fail --retry 10 --retry-delay 5 --retry-all-errors "http://$IP/health"
-          echo "Aplicación: http://$IP" >> "$GITHUB_STEP_SUMMARY"
+          DOMAIN=$(az network public-ip show -g rg-lozas-demo -n lozas-ip --query dnsSettings.fqdn -o tsv)
+          curl --fail --retry 30 --retry-delay 10 --connect-timeout 10 --max-time 20 --retry-all-errors "https://$DOMAIN/health"
+          echo "Aplicación: https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"

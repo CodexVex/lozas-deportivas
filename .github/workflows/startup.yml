@@ -31,6 +31,6 @@ jobs:
         if: steps.dates.outputs.active == 'true'
         run: |
           az vm start -g rg-lozas-demo -n vm-lozas --output none
-          IP=$(az network public-ip show -g rg-lozas-demo -n lozas-ip --query ipAddress -o tsv)
-          curl --fail --retry 20 --retry-delay 10 --retry-all-errors --connect-timeout 10 --max-time 20 "http://$IP/health"
-          echo "Aplicación encendida: http://$IP" >> "$GITHUB_STEP_SUMMARY"
+          DOMAIN=$(az network public-ip show -g rg-lozas-demo -n lozas-ip --query dnsSettings.fqdn -o tsv)
+          curl --fail --retry 20 --retry-delay 10 --retry-all-errors --connect-timeout 10 --max-time 20 "https://$DOMAIN/health"
+          echo "Aplicación encendida: https://$DOMAIN" >> "$GITHUB_STEP_SUMMARY"

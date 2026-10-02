@@ -15,7 +15,7 @@ Resultado: 18 pruebas unitarias y 3 de integración pasan con PostgreSQL, inclui
 - El pago es manual; no hay pasarela ni verificación bancaria.
 - Las reservas pendientes no expiran y no existe un flujo de cancelación en la pantalla.
 - Una sola VM: si falla, se detienen web y base de datos. No hay copias de seguridad automáticas.
-- La demo publica por HTTP; no incluye HTTPS.
+- HTTPS configurado con certificado público y renovación automática mediante Caddy.
 - SQL y modelos ORM se mantienen manualmente, sin migraciones de esquema.
 - La capacidad se muestra, pero no se valida contra asistentes de un evento.
 - Si una reserva cruza dos franjas contiguas configuradas por separado, la validación actual la rechaza. Los horarios de ejemplo usan una única franja diaria.

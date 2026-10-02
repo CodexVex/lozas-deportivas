@@ -33,6 +33,7 @@ resource "azurerm_public_ip" "app" {
   location            = var.location
   allocation_method   = "Static"
   sku                 = "Standard"
+  domain_name_label   = "lozas-codexvex-8bfb6baa"
 }
 resource "azurerm_network_security_group" "app" {
   name                = "lozas-nsg"
@@ -49,6 +50,18 @@ resource "azurerm_network_security_group" "app" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+  security_rule {
+    name                       = "HTTPS"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
 }
 resource "azurerm_network_interface" "app" {
   name                = "lozas-nic"
@@ -89,4 +102,4 @@ resource "azurerm_linux_virtual_machine" "app" {
   }
   custom_data = base64encode("#cloud-config\npackage_update: true\npackages:\n  - docker.io\n  - git\nruncmd:\n  - systemctl enable --now docker\n")
 }
-output "application_url" { value = "http://${azurerm_public_ip.app.ip_address}" }
+output "application_url" { value = "https://${azurerm_public_ip.app.fqdn}" }

@@ -2,7 +2,7 @@
 
 Flask + SQLAlchemy (ORM) + PostgreSQL + HTML/JavaScript.
 
-Aplicación publicada: http://172.174.92.49
+Aplicación publicada: https://lozas-codexvex-8bfb6baa.eastus.cloudapp.azure.com
 
 Repositorio: https://github.com/CodexVex/lozas-deportivas
 
@@ -73,7 +73,7 @@ az ad sp create-for-rbac --name lozas-github --role Contributor --scopes "/subsc
 
 Guarda el JSON devuelto en **Settings → Secrets and variables → Actions → Secrets → AZURE_CREDENTIALS**. En **Variables**, agrega `TF_STATE_ACCOUNT`, por ejemplo `lozasvex12345678`. La región predeterminada es `eastus`; puede cambiarse con `AZURE_LOCATION`.
 
-La demo usa HTTP, sin dominio ni HTTPS. Solo abre el puerto web 80. `setup.yml` utiliza `psql`; Liquibase era opcional en el enunciado.
+La aplicación publicada usa el nombre público de Azure y HTTPS con Caddy. El certificado se renueva automáticamente. Se abren los puertos web 80 y 443; PostgreSQL sigue sin puerto público. La ejecución local sencilla continúa en http://localhost. `setup.yml` utiliza `psql`; Liquibase era opcional en el enunciado.
 
 ## API
 
@@ -96,7 +96,7 @@ Para detener localmente: `docker compose stop`. Para iniciar: `docker compose up
 ## Entrega
 
 - Repositorio: https://github.com/CodexVex/lozas-deportivas (privado; comparte acceso con el docente).
-- Aplicación publicada y verificada: http://172.174.92.49
+- Aplicación publicada y verificada: https://lozas-codexvex-8bfb6baa.eastus.cloudapp.azure.com
 - Diccionario y diagrama: `docs/diccionario.md`, `docs/diagrama.md`, `docs/er.mmd`.
 
 Verificación: infraestructura, carga SQL y despliegue completados en GitHub Actions. 21 pruebas pasan con PostgreSQL (18 unitarias y 3 de integración); salud, página, lozas, disponibilidad e historial comprobados en la URL pública.
