@@ -7,7 +7,7 @@
 - Concurrencia: dos solicitudes al mismo horario; solo una debe aceptarse.
 - SQL: creación y carga de al menos 10 registros por tabla.
 
-La ejecución verificada y sus resultados están en GitHub Actions. Las pruebas no cubren cada formulario ni fallos de red o recuperación tras una caída.
+Resultado: 18 pruebas unitarias y 3 de integración pasan con PostgreSQL, incluidas solicitudes concurrentes. Se verificaron además la página, la salud de la aplicación, disponibilidad e historial en la URL pública. La evidencia está en GitHub Actions. Las pruebas no cubren cada formulario ni fallos de red o recuperación tras una caída.
 
 ## Límites del código y la arquitectura
 

@@ -2,6 +2,8 @@
 
 Flask + SQLAlchemy (ORM) + PostgreSQL + HTML/JavaScript.
 
+Aplicación publicada: http://172.174.92.49
+
 Repositorio: https://github.com/CodexVex/lozas-deportivas
 
 ## Ejecutar en tu computadora
@@ -94,5 +96,7 @@ Para detener localmente: `docker compose stop`. Para iniciar: `docker compose up
 ## Entrega
 
 - Repositorio: https://github.com/CodexVex/lozas-deportivas (privado; comparte acceso con el docente).
-- URL publicada: se muestra en el resumen de `deploy` cuando el despliegue está verificado.
+- Aplicación publicada y verificada: http://172.174.92.49
 - Diccionario y diagrama: `docs/diccionario.md`, `docs/diagrama.md`, `docs/er.mmd`.
+
+Verificación: infraestructura, carga SQL y despliegue completados en GitHub Actions. 21 pruebas pasan con PostgreSQL (18 unitarias y 3 de integración); salud, página, lozas, disponibilidad e historial comprobados en la URL pública.
