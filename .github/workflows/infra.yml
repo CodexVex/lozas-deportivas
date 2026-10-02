@@ -17,6 +17,19 @@ jobs:
       - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Credenciales de Terraform
+        env:
+          AZURE_CREDS: ${{ secrets.AZURE_CREDENTIALS }}
+        run: |
+          python - <<'SCRIPT'
+          import os,json
+          d=json.loads(os.environ['AZURE_CREDS'])
+          pairs={'ARM_CLIENT_ID':d['clientId'],'ARM_CLIENT_SECRET':d['clientSecret'],'ARM_TENANT_ID':d['tenantId'],'ARM_SUBSCRIPTION_ID':d['subscriptionId']}
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              for k,v in pairs.items():
+                  print('::add-mask::'+v)
+                  f.write(k+'='+v+'\n')
+          SCRIPT
       - uses: hashicorp/setup-terraform@v3
       - name: Preparar estado persistente
         run: |
