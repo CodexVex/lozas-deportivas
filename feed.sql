@@ -6,8 +6,9 @@ INSERT INTO users(id,name,email)
 SELECT i, 'Usuario ' || i, 'usuario' || i || '@example.com' FROM generate_series(1,10) i
 ON CONFLICT DO NOTHING;
 INSERT INTO courts(id,venue_id,name,sport,capacity,hourly_price)
-SELECT i,i,'Loza ' || i,CASE WHEN i%2=0 THEN 'Vóley' ELSE 'Fútbol' END,20,30+i
-FROM generate_series(1,10) i ON CONFLICT(id) DO NOTHING;
+SELECT i,i,'Sede ' || i || CASE WHEN i IN (1,6) THEN ' - Cancha única' ELSE ' - Cancha 1' END,CASE WHEN i%2=0 THEN 'Vóley' ELSE 'Fútbol' END,20,30+i
+FROM generate_series(1,10) i ON CONFLICT(id) DO UPDATE SET name=EXCLUDED.name
+WHERE courts.name='Loza ' || EXCLUDED.id;
 INSERT INTO courts(id,venue_id,name,sport,capacity,hourly_price)
 VALUES
 (11,2,'Sede 2 - Cancha 2','Vóley',20,32),
