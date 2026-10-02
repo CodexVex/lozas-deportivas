@@ -34,7 +34,7 @@ Resultado: 18 pruebas unitarias y 3 de integración pasan con PostgreSQL, inclui
 |---|---|---|
 | Framework, validación y GitHub | Cumple con alternativa permitida | Flask, formularios HTML y validaciones de API; repositorio GitHub |
 | ORM | Cumple | SQLAlchemy para consultas y escrituras |
-| bd.sql y feed.sql, mínimo 10 registros por tabla | Cumple | 10 sedes, 10 usuarios, 10 lozas, 70 horarios y 10 alquileres |
+| bd.sql y feed.sql, mínimo 10 registros por tabla | Cumple | 10 sedes, 10 usuarios, 30 lozas, 210 horarios y 10 alquileres |
 | infra.yml con Terraform | Cumple | Infraestructura aprovisionada y flujo ejecutado correctamente |
 | setup.yml para ejecutar SQL | Cumple | Carga verificada en Azure con psql; Liquibase era sugerido |
 | deploy.yml | Cumple | Aplicación publicada y comprobada |

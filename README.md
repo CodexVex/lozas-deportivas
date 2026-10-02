@@ -35,7 +35,7 @@ Pago manual y usuarios ficticios, sin inicio de sesión. Las horas son de Lima. 
 
 ## Base de datos
 
-`bd.sql` crea cinco tablas en la base `lozas`, creada por Docker. `feed.sql` carga 10 sedes, 10 usuarios, 10 lozas, 70 horarios y 10 alquileres históricos. Se pueden ejecutar de nuevo sin borrar los datos. PostgreSQL usa un volumen persistente y no tiene puerto público.
+`bd.sql` crea cinco tablas en la base `lozas`, creada por Docker. `feed.sql` carga 10 sedes, 10 usuarios, 30 lozas, 210 horarios y 10 alquileres históricos. Las sedes 1–5 tienen respectivamente 1, 2, 3, 4 y 5 canchas; las sedes 6–10 repiten esa distribución. Se pueden ejecutar de nuevo sin borrar los datos. PostgreSQL usa un volumen persistente y no tiene puerto público.
 
 ## Automatizaciones de GitHub
 
