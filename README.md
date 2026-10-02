@@ -70,10 +70,12 @@ Abre Azure Cloud Shell en modo Bash y selecciona la suscripción correcta. Copia
 
 ```bash
 SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-az ad sp create-for-rbac --name lozas-github --role Contributor --scopes "/subscriptions/$SUBSCRIPTION_ID" --sdk-auth
+az group create -n rg-lozas-demo -l eastus
+az group create -n rg-lozas-state -l eastus
+az ad sp create-for-rbac --name lozas-github --role Contributor --scopes "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-lozas-demo" "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/rg-lozas-state" --sdk-auth
 ```
 
-Copia el JSON devuelto directamente a **GitHub → repositorio → Settings → Secrets and variables → Actions → New repository secret** con el nombre `AZURE_CREDENTIALS`. No lo pegues en archivos del repositorio. Este paso crea una identidad de automatización con permisos en la suscripción; requiere que tu cuenta esté autorizada para ello.
+Copia el JSON devuelto directamente a **GitHub → repositorio → Settings → Secrets and variables → Actions → New repository secret** con el nombre `AZURE_CREDENTIALS`. No lo pegues en archivos del repositorio. Este paso crea una identidad de automatización con permisos solo en los dos grupos del proyecto; requiere que tu cuenta esté autorizada para ello.
 
 En **Variables**, agrega `TF_STATE_ACCOUNT` con un nombre globalmente único, por ejemplo `lozasvex` seguido de 8 números, solo letras minúsculas y números, entre 3 y 24 caracteres. Opcional: `AZURE_LOCATION`, por defecto `eastus`.
 
@@ -125,3 +127,5 @@ Para volver a arrancar: `docker compose up -d`. No uses `down -v` si quieres con
 - Aplicación publicada: pendiente hasta ejecutar y verificar el despliegue en Azure. Consulta el resumen de `deploy`.
 - Diccionario: `docs/diccionario.md`.
 - Diagrama Mermaid: `docs/er.mmd` y `docs/diagrama.md`.
+
+La máquina se apaga automáticamente a las 23:00 de Lima. Para volver a usarla, inicia `vm-lozas` desde Azure. El disco y la IP conservados pueden seguir consumiendo crédito cuando está apagada.

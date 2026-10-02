@@ -34,6 +34,11 @@ jobs:
           terraform init -backend-config="resource_group_name=rg-lozas-state" -backend-config="storage_account_name=$STATE_ACCOUNT" -backend-config="container_name=tfstate" -backend-config="key=lozas.tfstate"
           terraform fmt
           terraform validate
+          if ! terraform state show azurerm_resource_group.app >/dev/null 2>&1; then
+            terraform import -var="location=$LOCATION" azurerm_resource_group.app "/subscriptions/$ARM_SUBSCRIPTION_ID/resourceGroups/rg-lozas-demo"
+          fi
           terraform apply -auto-approve -var="location=$LOCATION"
           echo "### URL de la aplicación" >> "$GITHUB_STEP_SUMMARY"
           terraform output -raw application_url >> "$GITHUB_STEP_SUMMARY"
+      - name: Apagado nocturno para ahorrar crédito
+        run: az vm auto-shutdown -g rg-lozas-demo -n vm-lozas --time 0400 --output none
