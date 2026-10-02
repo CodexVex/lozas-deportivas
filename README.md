@@ -58,7 +58,7 @@ docker compose exec -T web python -m pytest -q
 
 ## Configuración de Azure
 
-Requiere la suscripción **Azure for Students** activa. Se utiliza una sola VM pequeña para web y base de datos. Se apaga a las **23:00 de Lima**; para usarla al día siguiente, inicia `vm-lozas` en Azure. Disco e IP pueden consumir crédito mientras está apagada.
+Requiere la suscripción **Azure for Students** activa. Se utiliza una sola VM pequeña para web y base de datos. Se apaga a las **23:00 de Lima**; se encenderá automáticamente a las 07:00 de Lima del 2 al 6 de octubre de 2026 para la revisión. Después puedes iniciar `vm-lozas` manualmente en Azure. Disco e IP pueden consumir crédito mientras está apagada.
 
 GitHub necesita el secreto `AZURE_CREDENTIALS` y la variable `TF_STATE_ACCOUNT` (nombre único, solo minúsculas y números). La credencial tiene permiso Contributor únicamente en `rg-lozas-demo` y `rg-lozas-state`. No publiques su contenido.
 
@@ -100,3 +100,5 @@ Para detener localmente: `docker compose stop`. Para iniciar: `docker compose up
 - Diccionario y diagrama: `docs/diccionario.md`, `docs/diagrama.md`, `docs/er.mmd`.
 
 Verificación: infraestructura, carga SQL y despliegue completados en GitHub Actions. 21 pruebas pasan con PostgreSQL (18 unitarias y 3 de integración); salud, página, lozas, disponibilidad e historial comprobados en la URL pública.
+
+`startup.yml` programa cinco encendidos, del 2 al 6 de octubre de 2026, a las 07:00 de Lima. GitHub puede retrasar las ejecuciones programadas. El encendido automático no continúa después del 6; el apagado de las 23:00 se mantiene. El flujo también permite un encendido manual con Run workflow.
